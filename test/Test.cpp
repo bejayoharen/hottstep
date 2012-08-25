@@ -60,7 +60,8 @@ int main( int args, char **argv ) {
     outputParameters.hostApiSpecificStreamInfo = NULL;
 
     seq.getNotes()[0]=64;
-    seq.getNotes()[2]=65;
+    seq.getNotes()[1]=67;
+    seq.getNotes()[2]=67;
     seq.getNotes()[4]=66;
     seq.getNotes()[6]=64;
 
