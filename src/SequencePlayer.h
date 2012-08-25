@@ -4,19 +4,21 @@
 #include "LoopData.h"
 #include "Filter.h"
 #include "Delay.h"
+#include "Noise.h"
 
 namespace hottstep {
 namespace synth {
 
 class SequencePlayer {
  private:
-   float pitchTable[127];
+   float pitchTable[128];
    float sampleRate;
    int pos;
    int totalLength;
    int lengthPerDivision;
    int attackSamples, decaySamples, releaseSamples;
    float sustainLevel;
+   Noise noise;
    LoopData loopData;
    ButterworthFilter lpfilter;
    ButterworthFilter modfilter;
