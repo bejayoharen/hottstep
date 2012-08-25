@@ -3,6 +3,7 @@
 
 #include "LoopData.h"
 #include "Filter.h"
+#include "Delay.h"
 
 namespace hottstep {
 namespace synth {
@@ -19,6 +20,7 @@ class SequencePlayer {
    LoopData loopData;
    ButterworthFilter lpfilter;
    ButterworthFilter modfilter;
+   Delay delay;
 
  public:
    SequencePlayer( float tempo, float sampleRate, int bars, int divisionsInBar ) ;

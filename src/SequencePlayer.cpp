@@ -15,11 +15,12 @@ static int computeSamples( float milliseconds, float srate ) {
 class SequencePlayer ;
 
 SequencePlayer::SequencePlayer( float tempo, float sampleRate, int bars, int divisionsInBar )
-      : pos(0), sampleRate(sampleRate), loopData( tempo, sampleRate, bars, divisionsInBar ),
-        lpfilter(), modfilter()
+      : pos(0),
+        totalLength( (int) ( ( sampleRate * bars * 4 * 60 ) / ( tempo ) ) ),
+        lengthPerDivision( totalLength / ( bars * divisionsInBar ) ),
+        sampleRate(sampleRate), loopData( tempo, sampleRate, bars, divisionsInBar ),
+        lpfilter(), modfilter(), delay( 2 * totalLength / ( bars * divisionsInBar * 3) )
 {
-   totalLength = (int) ( ( sampleRate * bars * 4 * 60 ) / ( tempo ) ) ;
-   lengthPerDivision = totalLength / ( bars * divisionsInBar );
    //cout << totalLength << " : " << lengthPerDivision << endl;
    for( int i=0; i<127; ++i ) {
       pitchTable[i] = ( 440.0 / 32.0 ) * pow( 2, (i-9.0)/12.0 ) ;
@@ -31,6 +32,7 @@ SequencePlayer::SequencePlayer( float tempo, float sampleRate, int bars, int div
 void SequencePlayer::reset() {
    pos = 0;
    lpfilter.reset();
+   delay.reset();
 }
 
 void SequencePlayer::setAdsr( float attackMs, float decayMs, float sustainLevel, float releaseMs )
@@ -83,9 +85,11 @@ float SequencePlayer::tick() {
       pos = 0;
 
    //filter
-   modfilter.setupLowpass( sampleRate, 200 + gain * 1000, .5 );
-   lpfilter.setupLowpass( sampleRate, 600 + 400*(1+sin( M_PI * 2 * pos / (float) lengthPerDivision ))/2 , 2 );
+   modfilter.setupLowpass( sampleRate, 200 + gain * 12000, .4 );
+   lpfilter.setupLowpass( sampleRate, 1000 + 700*(1+sin( M_PI * 2 * pos / (float) lengthPerDivision ))/2 , 2 );
+   ret = modfilter.process( ret );
    ret = lpfilter.process( ret );
+   ret = delay.process( ret, .5 );
    return ret;
 }
 
