@@ -3,6 +3,7 @@
 #include "SequencePlayer.h"
 #include "Helium.h"
 #include "Xenon.h"
+#include "Radon.h"
 
 #include "portaudio.h"
 
@@ -50,6 +51,7 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
 int main( int args, char **argv ) {
     Helium helium( 120, 44100, 2, 8 );
     Xenon xenon( 120, 44100, 2, 8 );
+    Radon radon( 120, 44100, 2, 8 );
     PaStreamParameters outputParameters;
     PaStream *stream;
     PaError err;
@@ -58,6 +60,7 @@ int main( int args, char **argv ) {
     vector<SequencePlayer *> seq;
     seq.push_back( &helium );
     seq.push_back( &xenon );
+    seq.push_back( &radon );
 
 
     printf("\n\n");
@@ -136,6 +139,26 @@ int main( int args, char **argv ) {
 
     for( int i=0; i<xenon.getNotes().size(); ++i )
        xenon.getNotes()[i] -= 24 ; // down two octaves
+
+    radon.getNotes()[ 0]=36;
+    radon.getNotes()[ 1]=96;
+    radon.getNotes()[ 2]=60;
+    radon.getNotes()[ 3]=107;
+
+    radon.getNotes()[ 4]=36;
+    radon.getNotes()[ 5]=96;
+    radon.getNotes()[ 6]=60;
+    radon.getNotes()[ 7]=108;
+
+    radon.getNotes()[ 8]=36;
+    radon.getNotes()[ 9]=96;
+    radon.getNotes()[10]=60;
+    radon.getNotes()[11]=107;
+
+    radon.getNotes()[12]=36;
+    radon.getNotes()[13]=96;
+    radon.getNotes()[14]=60;
+    radon.getNotes()[15]=108;
 
 
     err = Pa_OpenStream(

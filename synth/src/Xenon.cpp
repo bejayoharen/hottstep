@@ -15,7 +15,7 @@ Xenon::Xenon( float tempo, float sampleRate, int bars, int divisionsInBar )
         lpfilter()
 {
    envfilter.setupLowpass( sampleRate, 1000, 1 );
-   lpfilter.setupLowpass( sampleRate, 1000, 1 );
+   lpfilter.setupLowpass( sampleRate, 2500 , 1.0f );
    setAdsr( 10, 10, .6, 100 );
 }
 void Xenon::reset() {
@@ -67,7 +67,6 @@ float *Xenon::tick() {
       pos = 0;
 
    //filter
-   lpfilter.setupLowpass( sampleRate, 2500 , 1.0f );
    envFollow = gain * .0005 + envFollow * .9995 ;
    envfilter.setupLowpass( sampleRate, 100 + envFollow * 700, 8 );
    ret = lpfilter.process( ret );
