@@ -25,7 +25,7 @@ void Xenon::reset() {
    envFollow = 0;
 }
 
-float Xenon::tick() {
+float *Xenon::tick() {
    int note = getNotes()[ pos / lengthPerDivision ] ;
    int placeInNote = pos % lengthPerDivision;
    float ret;
@@ -72,7 +72,9 @@ float Xenon::tick() {
    envfilter.setupLowpass( sampleRate, 100 + envFollow * 700, 8 );
    ret = lpfilter.process( ret );
    ret = envfilter.process( ret );
-   return ret;
+   retVals[0] = ret;
+   retVals[1] = ret;
+   return retVals;
 }
 
 } //namespace synth

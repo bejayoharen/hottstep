@@ -26,7 +26,7 @@ void Helium::reset() {
    delay.reset();
 }
 
-float Helium::tick() {
+float *Helium::tick() {
    int note = getNotes()[ pos / lengthPerDivision ] ;
    int placeInNote = pos % lengthPerDivision;
    float ret;
@@ -71,7 +71,9 @@ float Helium::tick() {
    ret = modfilter.process( ret );
    ret = lpfilter.process( ret );
    ret = ret + .6 * delay.process( ret, .5 );
-   return ret;
+   retVals[0] = ret;
+   retVals[1] = ret;
+   return retVals;
 }
 
 } //namespace synth

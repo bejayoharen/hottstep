@@ -14,11 +14,12 @@ class Xenon : public SequencePlayer {
    ButterworthFilter envfilter;
    ButterworthFilter lpfilter;
    float envFollow;
+   float retVals[2];
 
  public:
    Xenon( float tempo, float sampleRate, int bars, int divisionsInBar ) ;
    void reset();
-   float tick();
+   float *tick();
 } ;
 
 } //namespace synth

@@ -29,12 +29,15 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
     
     for( i=0; i<framesPerBuffer; i++ )
     {
-        float t = 0;
-        
-        for( int j=0; j<sps.size(); ++j )
-           t += sps[j]->tick();
-        *out++ = t;  /* left */
-        *out++ = t;  /* right */
+        float l = 0;
+        float r = 0;
+        for( int j=0; j<sps.size(); ++j ) {
+           float *ar = sps[j]->tick();
+           l += ar[0];
+           r += ar[1];
+        }
+        *out++ = l;  /* left */
+        *out++ = r;  /* right */
     }
     
     return paContinue;

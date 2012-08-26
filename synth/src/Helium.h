@@ -15,11 +15,12 @@ class Helium : public SequencePlayer {
    ButterworthFilter lpfilter;
    ButterworthFilter modfilter;
    Delay delay;
+   float retVals[2];
 
  public:
    Helium( float tempo, float sampleRate, int bars, int divisionsInBar ) ;
    void reset();
-   float tick();
+   float *tick();
 } ;
 
 } //namespace synth

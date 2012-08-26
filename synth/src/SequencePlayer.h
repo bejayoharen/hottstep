@@ -26,7 +26,7 @@ class SequencePlayer {
     * Some instruments may ignore all or part of this.
     */
    void setAdsr( float attackMs, float decayMs, float sustainLevel, float releaseMs );
-   virtual float tick() = 0;
+   virtual float* tick() = 0;
    inline int computeSamples( float milliseconds ) {
       return (int) ( ( milliseconds / 1000 ) * sampleRate + .5 );
    }
