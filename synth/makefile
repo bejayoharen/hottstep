@@ -3,9 +3,9 @@ SO_NAME:=libhottstepsynth.so.1
 SO_LIB:=libhottstepsynth.so.1.0.0
 STATIC_LIB:=libhottsetpsynth.a
 
-CPPFILES:=src/SequencePlayer.cpp src/Helium.cpp src/Xenon.cpp src/Radon.cpp
-OBJECTS:=build/target/SequencePlayer.opp build/target/Helium.opp build/target/Xenon.opp build/target/Radon.opp
-HEADERS:=src/LoopData.h src/SequencePlayer.h src/Filter.h src/Delay.h src/Noise.h src/Helium.h src/Xenon.h src/Radon.h
+CPPFILES:=src/SequencePlayer.cpp src/Helium.cpp src/Xenon.cpp src/Radon.cpp src/Neon.cpp
+OBJECTS:=build/target/SequencePlayer.opp build/target/Helium.opp build/target/Xenon.opp build/target/Radon.opp build/target/Neon.opp
+HEADERS:=src/LoopData.h src/SequencePlayer.h src/Filter.h src/Delay.h src/Noise.h src/Helium.h src/Xenon.h src/Radon.h src/Neon.h
 
 CFLAGS=-fPIC -O2 -fvisibility=hidden -fvisibility-inlines-hidden
 CPPFLAGS=$(CFLAGS)
