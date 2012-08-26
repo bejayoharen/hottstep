@@ -37,7 +37,7 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
 
 
 int main( int args, char **argv ) {
-    SequencePlayer seq( 120, 44100, 2, 4 );
+    SequencePlayer seq( 120, 44100, 2, 8 );
     PaStreamParameters outputParameters;
     PaStream *stream;
     PaError err;
@@ -59,10 +59,40 @@ int main( int args, char **argv ) {
     outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
     outputParameters.hostApiSpecificStreamInfo = NULL;
 
-    seq.getNotes()[0]=64;
-    seq.getNotes()[2]=65;
-    seq.getNotes()[4]=66;
-    seq.getNotes()[6]=64;
+/*
+    seq.getNotes()[ 0]=48;
+    seq.getNotes()[ 1]=51;
+    seq.getNotes()[ 2]=53;
+    seq.getNotes()[ 3]=55;
+    seq.getNotes()[ 4]=58;
+    seq.getNotes()[ 5]=60;
+    seq.getNotes()[ 6]=63;
+    seq.getNotes()[ 7]=65;
+    seq.getNotes()[ 8]=67;
+    seq.getNotes()[ 9]=70;
+    seq.getNotes()[10]=72;
+    seq.getNotes()[11]=75;
+    seq.getNotes()[12]=77;
+    seq.getNotes()[13]=79;
+    seq.getNotes()[14]=82;
+    seq.getNotes()[15]=84;
+*/
+    seq.getNotes()[ 0]=48;
+    seq.getNotes()[ 1]=-1;
+    seq.getNotes()[ 2]=53;
+    seq.getNotes()[ 3]=-1;
+    seq.getNotes()[ 4]=84;
+    seq.getNotes()[ 5]=60;
+    seq.getNotes()[ 6]=48;
+    seq.getNotes()[ 7]=84;
+    seq.getNotes()[ 8]=48;
+    seq.getNotes()[ 9]=-1;
+    seq.getNotes()[10]=55;
+    seq.getNotes()[11]=53;
+    seq.getNotes()[12]=48;
+    seq.getNotes()[13]=-1;
+    seq.getNotes()[14]=-1;
+    seq.getNotes()[15]=-1;
 
     err = Pa_OpenStream(
               &stream,

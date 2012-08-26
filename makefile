@@ -5,7 +5,7 @@ STATIC_LIB:=libhottsetpsynth.a
 
 CPPFILES:=src/LoopData.cpp src/SequencePlayer.cpp
 OBJECTS:=build/target/SequencePlayer.opp
-HEADERS:=src/LoopData.h src/SequencePlayer.h
+HEADERS:=src/LoopData.h src/SequencePlayer.h src/Filter.h src/Delay.h src/Noise.h
 
 CFLAGS=-fPIC -O2 -fvisibility=hidden -fvisibility-inlines-hidden
 CPPFLAGS=$(CFLAGS)
