@@ -12,6 +12,9 @@
 @interface AnimationMainView : UIView
 {
     NSMutableArray *sliders;
+    NSInteger currentIndex;
+    NSInteger totalNumber;
+
 }
 
 @end
