@@ -1,4 +1,4 @@
-#include "Helium.h"
+#include "Xenon.h"
 #include <math.h>
 #include <iostream>
 
@@ -7,26 +7,25 @@ using namespace std;
 namespace hottstep {
 namespace synth {
 
-class Helium;
+class Xenon;
 
-Helium::Helium( float tempo, float sampleRate, int bars, int divisionsInBar )
+Xenon::Xenon( float tempo, float sampleRate, int bars, int divisionsInBar )
       : SequencePlayer( tempo, sampleRate, bars, divisionsInBar ),
-        noise(1),
-        lpfilter(),
-        modfilter(),
-        delay( 3 * lengthPerDivision / 4 )
+        noise(2),
+        lpfilter()
 {
+   envfilter.setupLowpass( sampleRate, 1000, 1 );
    lpfilter.setupLowpass( sampleRate, 1000, 1 );
-   modfilter.setupLowpass( sampleRate, 1000, 1 );
-   setAdsr( 10, 10, .7, 10 );
+   setAdsr( 10, 10, .6, 100 );
 }
-void Helium::reset() {
+void Xenon::reset() {
    pos = 0;
    lpfilter.reset();
-   delay.reset();
+   envfilter.reset();
+   envFollow = 0;
 }
 
-float Helium::tick() {
+float Xenon::tick() {
    int note = getNotes()[ pos / lengthPerDivision ] ;
    int placeInNote = pos % lengthPerDivision;
    float ret;
@@ -54,11 +53,13 @@ float Helium::tick() {
       //for( int i=0; i<80*gain; ++i )
       //   cout << "*" ;
       //cout << endl;
-      ret = sin( pitchTable[note] * placeInNote * 2 * M_PI / sampleRate ) ;
-      ret = clip( ret, .7 );
+      ret = fabsf( sin( pitchTable[note] * placeInNote * 2 * M_PI / sampleRate ) );
+      ret = ( ret - .5 ) * 2 ;
+
+      //ret += n / 20;
       ret *= gain;
-      ret = clip( ret, .5 );
-      ret += n / 2.5;
+      ret *= 6 ;
+      ret = clip( ret, .8 );
    }
    //cout << p << " : " << ret << endl;
    ++pos;
@@ -66,11 +67,11 @@ float Helium::tick() {
       pos = 0;
 
    //filter
-   modfilter.setupLowpass( sampleRate, 200 + gain * 12000, .4 );
-   lpfilter.setupLowpass( sampleRate, 1000 + 700*(1+sin( M_PI * 2 * pos / (float) lengthPerDivision ))/2 , 2 );
-   ret = modfilter.process( ret );
+   lpfilter.setupLowpass( sampleRate, 2500 , .25f );
+   envFollow = gain * .0005 + envFollow * .9995 ;
+   envfilter.setupLowpass( sampleRate, 100 + envFollow * 700, 8 );
    ret = lpfilter.process( ret );
-   ret = ret + .6 * delay.process( ret, .5 );
+   ret = envfilter.process( ret );
    return ret;
 }
 

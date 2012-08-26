@@ -2,6 +2,8 @@
 
 #include "SequencePlayer.h"
 #include "Helium.h"
+#include "Xenon.h"
+
 #include "portaudio.h"
 
 using namespace std;
@@ -17,7 +19,7 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
                             PaStreamCallbackFlags statusFlags,
                             void *userData )
 {
-    SequencePlayer *seq = (SequencePlayer*)userData;
+    vector<SequencePlayer*>& sps = *(vector<SequencePlayer*> *) userData;
     float *out = (float*)outputBuffer;
     unsigned long i;
 
@@ -27,9 +29,12 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
     
     for( i=0; i<framesPerBuffer; i++ )
     {
-        float f = seq->tick();
-        *out++ = f;  /* left */
-        *out++ = f;  /* right */
+        float t = 0;
+        
+        for( int j=0; j<sps.size(); ++j )
+           t += sps[j]->tick();
+        *out++ = t;  /* left */
+        *out++ = t;  /* right */
     }
     
     return paContinue;
@@ -39,13 +44,19 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
 
 int main( int args, char **argv ) {
     Helium helium( 120, 44100, 2, 8 );
+    Xenon xenon( 120, 44100, 2, 8 );
     PaStreamParameters outputParameters;
     PaStream *stream;
     PaError err;
     int i;
 
-    
-    printf("PortAudio Test: output sine wave. SR = %d, BufSize = %d\n", SAMPLE_RATE, FRAMES_PER_BUFFER);
+    vector<SequencePlayer *> seq;
+    seq.push_back( &helium );
+    seq.push_back( &xenon );
+
+
+    printf("\n\n");
+    printf("Sequencer Test. SR = %d, BufSize = %d\n", SAMPLE_RATE, FRAMES_PER_BUFFER);
     
     err = Pa_Initialize();
     if( err != paNoError ) goto error;
@@ -78,22 +89,49 @@ int main( int args, char **argv ) {
     seq.getNotes()[14]=82;
     seq.getNotes()[15]=84;
 */
-    helium.getNotes()[ 0]=48;
+    helium.getNotes()[ 0]=53;
     helium.getNotes()[ 1]=-1;
-    helium.getNotes()[ 2]=53;
+    helium.getNotes()[ 2]=48;
     helium.getNotes()[ 3]=-1;
-    helium.getNotes()[ 4]=84;
-    helium.getNotes()[ 5]=60;
-    helium.getNotes()[ 6]=48;
-    helium.getNotes()[ 7]=84;
-    helium.getNotes()[ 8]=48;
-    helium.getNotes()[ 9]=-1;
-    helium.getNotes()[10]=55;
-    helium.getNotes()[11]=53;
-    helium.getNotes()[12]=48;
-    helium.getNotes()[13]=-1;
+
+    helium.getNotes()[ 4]=53;
+    helium.getNotes()[ 5]=-1;
+    helium.getNotes()[ 6]=-1;
+    helium.getNotes()[ 7]=60;
+
+    helium.getNotes()[ 8]=53;
+    helium.getNotes()[ 9]=51;
+    helium.getNotes()[10]=63;
+    helium.getNotes()[11]=48;
+
+    helium.getNotes()[12]=53;
+    helium.getNotes()[13]=70;
     helium.getNotes()[14]=-1;
     helium.getNotes()[15]=-1;
+
+    xenon.getNotes()[ 0]=48;
+    xenon.getNotes()[ 1]=-1;
+    xenon.getNotes()[ 2]=60;
+    xenon.getNotes()[ 3]=-1;
+
+    xenon.getNotes()[ 4]=48;
+    xenon.getNotes()[ 5]=-1;
+    xenon.getNotes()[ 6]=55;
+    xenon.getNotes()[ 7]=-1;
+
+    xenon.getNotes()[ 8]=48;
+    xenon.getNotes()[ 9]=-1;
+    xenon.getNotes()[10]=60;
+    xenon.getNotes()[11]=55;
+
+    xenon.getNotes()[12]=48;
+    xenon.getNotes()[13]=53;
+    xenon.getNotes()[14]=55;
+    xenon.getNotes()[15]=60;
+
+    for( int i=0; i<xenon.getNotes().size(); ++i )
+       xenon.getNotes()[i] -= 24 ; // down two octaves
+
 
     err = Pa_OpenStream(
               &stream,
@@ -103,7 +141,7 @@ int main( int args, char **argv ) {
               FRAMES_PER_BUFFER,
               paClipOff,      /* we won't output out of range samples so don't bother clipping them */
               paCallback,
-              &helium );
+              &seq );
     if( err != paNoError ) goto error;
 
     //sprintf( data.message, "No Message" );

@@ -30,6 +30,14 @@ class SequencePlayer {
    inline int computeSamples( float milliseconds ) {
       return (int) ( ( milliseconds / 1000 ) * sampleRate + .5 );
    }
+   inline float clip( float val, float range ) {
+      if( val > range )
+         return range;
+      else if( val < -range )
+         return -range;
+      else
+         return val;
+   }
 } ;
 
 } //namespace synth
