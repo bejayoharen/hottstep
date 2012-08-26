@@ -1,5 +1,4 @@
-#include "SequencePlayer.h"
-#include "Filter.h"
+#include "Helium.h"
 #include <math.h>
 #include <iostream>
 
@@ -8,44 +7,25 @@ using namespace std;
 namespace hottstep {
 namespace synth {
 
-static int computeSamples( float milliseconds, float srate ) {
-   return (int) ( ( milliseconds / 1000 ) * srate + .5 );
-}
+class Helium;
 
-class SequencePlayer ;
-
-SequencePlayer::SequencePlayer( float tempo, float sampleRate, int bars, int divisionsInBar )
-      : pos(0),
-        totalLength( (int) ( ( sampleRate * bars * 4 * 60 ) / ( tempo ) ) ),
-        lengthPerDivision( totalLength / ( bars * divisionsInBar ) ),
-        sampleRate(sampleRate),
+Helium::Helium( float tempo, float sampleRate, int bars, int divisionsInBar )
+      : SequencePlayer( tempo, sampleRate, bars, divisionsInBar ),
         noise(1),
-        loopData( tempo, sampleRate, bars, divisionsInBar ),
-        lpfilter(), modfilter(), delay( 2 * totalLength / ( bars * divisionsInBar * 3) )
+        lpfilter(),
+        modfilter(),
+        delay( 2 * totalLength / ( bars * divisionsInBar * 3) )
 {
-   //cout << totalLength << " : " << lengthPerDivision << endl;
-   for( int i=0; i<128; ++i ) {
-      pitchTable[i] = ( 440.0 / 32.0 ) * pow( 2, (i-9.0)/12.0 ) ;
-   }
-   setAdsr( 10, 10, .7, 10 );
    lpfilter.setupLowpass( sampleRate, 1000, 1 );
    modfilter.setupLowpass( sampleRate, 1000, 1 );
 }
-void SequencePlayer::reset() {
+void Helium::reset() {
    pos = 0;
    lpfilter.reset();
    delay.reset();
 }
 
-void SequencePlayer::setAdsr( float attackMs, float decayMs, float sustainLevel, float releaseMs )
-{
-   attackSamples = computeSamples( attackMs, sampleRate );
-   decaySamples  = computeSamples( decayMs, sampleRate );
-   this->sustainLevel = sustainLevel;
-   releaseSamples = computeSamples( releaseMs, sampleRate );
-}
-
-float SequencePlayer::tick() {
+float Helium::tick() {
    int note = getNotes()[ pos / lengthPerDivision ] ;
    int placeInNote = pos % lengthPerDivision;
    float ret;

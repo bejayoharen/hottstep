@@ -1,6 +1,7 @@
 #include <math.h>
 
 #include "SequencePlayer.h"
+#include "Helium.h"
 #include "portaudio.h"
 
 using namespace std;
@@ -37,7 +38,7 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
 
 
 int main( int args, char **argv ) {
-    SequencePlayer seq( 120, 44100, 2, 8 );
+    Helium helium( 120, 44100, 2, 8 );
     PaStreamParameters outputParameters;
     PaStream *stream;
     PaError err;
@@ -77,22 +78,22 @@ int main( int args, char **argv ) {
     seq.getNotes()[14]=82;
     seq.getNotes()[15]=84;
 */
-    seq.getNotes()[ 0]=48;
-    seq.getNotes()[ 1]=-1;
-    seq.getNotes()[ 2]=53;
-    seq.getNotes()[ 3]=-1;
-    seq.getNotes()[ 4]=84;
-    seq.getNotes()[ 5]=60;
-    seq.getNotes()[ 6]=48;
-    seq.getNotes()[ 7]=84;
-    seq.getNotes()[ 8]=48;
-    seq.getNotes()[ 9]=-1;
-    seq.getNotes()[10]=55;
-    seq.getNotes()[11]=53;
-    seq.getNotes()[12]=48;
-    seq.getNotes()[13]=-1;
-    seq.getNotes()[14]=-1;
-    seq.getNotes()[15]=-1;
+    helium.getNotes()[ 0]=48;
+    helium.getNotes()[ 1]=-1;
+    helium.getNotes()[ 2]=53;
+    helium.getNotes()[ 3]=-1;
+    helium.getNotes()[ 4]=84;
+    helium.getNotes()[ 5]=60;
+    helium.getNotes()[ 6]=48;
+    helium.getNotes()[ 7]=84;
+    helium.getNotes()[ 8]=48;
+    helium.getNotes()[ 9]=-1;
+    helium.getNotes()[10]=55;
+    helium.getNotes()[11]=53;
+    helium.getNotes()[12]=48;
+    helium.getNotes()[13]=-1;
+    helium.getNotes()[14]=-1;
+    helium.getNotes()[15]=-1;
 
     err = Pa_OpenStream(
               &stream,
@@ -102,7 +103,7 @@ int main( int args, char **argv ) {
               FRAMES_PER_BUFFER,
               paClipOff,      /* we won't output out of range samples so don't bother clipping them */
               paCallback,
-              &seq );
+              &helium );
     if( err != paNoError ) goto error;
 
     //sprintf( data.message, "No Message" );
