@@ -36,6 +36,8 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
            l += ar[0];
            r += ar[1];
         }
+        l /= sps.size();
+        r /= sps.size();
         *out++ = l;  /* left */
         *out++ = r;  /* right */
     }

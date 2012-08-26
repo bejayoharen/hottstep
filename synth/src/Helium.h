@@ -14,7 +14,7 @@ class Helium : public SequencePlayer {
    Noise noise;
    ButterworthFilter lpfilter;
    ButterworthFilter modfilter;
-   Delay delay;
+   Delay delay1, delay2;
    float retVals[2];
 
  public:

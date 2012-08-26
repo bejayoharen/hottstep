@@ -14,7 +14,8 @@ Helium::Helium( float tempo, float sampleRate, int bars, int divisionsInBar )
         noise(1),
         lpfilter(),
         modfilter(),
-        delay( 3 * lengthPerDivision / 4 )
+        delay1( 3 * lengthPerDivision / 4 ),
+        delay2( 4 * lengthPerDivision / 5 )
 {
    lpfilter.setupLowpass( sampleRate, 1000, 1 );
    modfilter.setupLowpass( sampleRate, 1000, 1 );
@@ -23,16 +24,17 @@ Helium::Helium( float tempo, float sampleRate, int bars, int divisionsInBar )
 void Helium::reset() {
    pos = 0;
    lpfilter.reset();
-   delay.reset();
+   delay1.reset();
+   delay2.reset();
 }
 
 float *Helium::tick() {
    int note = getNotes()[ pos / lengthPerDivision ] ;
    int placeInNote = pos % lengthPerDivision;
-   float ret;
+   float signal;
    float gain = 0;
    if( note < 0 || note > 127 ) {
-      ret = 0;
+      signal = 0;
    } else {
       gain = sustainLevel;
       float n = 0;
@@ -54,11 +56,11 @@ float *Helium::tick() {
       //for( int i=0; i<80*gain; ++i )
       //   cout << "*" ;
       //cout << endl;
-      ret = sin( pitchTable[note] * placeInNote * 2 * M_PI / sampleRate ) ;
-      ret = clip( ret, .7 );
-      ret *= gain;
-      ret = clip( ret, .5 );
-      ret += n / 2.5;
+      signal = sin( pitchTable[note] * placeInNote * 2 * M_PI / sampleRate ) ;
+      signal = clip( signal, .7 );
+      signal *= gain;
+      signal = clip( signal, .5 );
+      signal += n / 2.5;
    }
    //cout << p << " : " << ret << endl;
    ++pos;
@@ -68,11 +70,19 @@ float *Helium::tick() {
    //filter
    modfilter.setupLowpass( sampleRate, 200 + gain * 12000, .4 );
    lpfilter.setupLowpass( sampleRate, 1000 + 700*(1+sin( M_PI * 2 * pos / (float) lengthPerDivision ))/2 , 2 );
-   ret = modfilter.process( ret );
-   ret = lpfilter.process( ret );
-   ret = ret + .6 * delay.process( ret, .5 );
-   retVals[0] = ret;
-   retVals[1] = ret;
+   signal = modfilter.process( signal );
+   signal = lpfilter.process( signal );
+
+   //delay
+   retVals[0] = delay1.read();
+   retVals[1] = delay2.read();
+
+   delay1.process( ( retVals[0] / 2 + retVals[1] + signal ) * .55 );
+   delay2.process( ( retVals[0] / 2 + retVals[1] + signal ) * .55 );
+
+   retVals[0] = retVals[0] + signal ;
+   retVals[1] = retVals[1] + signal ;
+
    return retVals;
 }
 

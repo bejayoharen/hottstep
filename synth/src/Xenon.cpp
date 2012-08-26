@@ -59,7 +59,7 @@ float *Xenon::tick() {
       //ret += n / 20;
       ret *= gain;
       ret *= 6 ;
-      ret = clip( ret, .8 );
+      ret = clip( ret, .33 );
    }
    //cout << p << " : " << ret << endl;
    ++pos;
@@ -67,11 +67,12 @@ float *Xenon::tick() {
       pos = 0;
 
    //filter
-   lpfilter.setupLowpass( sampleRate, 2500 , .25f );
+   lpfilter.setupLowpass( sampleRate, 2500 , 1.0f );
    envFollow = gain * .0005 + envFollow * .9995 ;
    envfilter.setupLowpass( sampleRate, 100 + envFollow * 700, 8 );
    ret = lpfilter.process( ret );
    ret = envfilter.process( ret );
+   ret = clip( ret, .95 );
    retVals[0] = ret;
    retVals[1] = ret;
    return retVals;

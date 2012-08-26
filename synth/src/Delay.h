@@ -20,9 +20,13 @@ class Delay {
       index = 0;
    }
 
-   float inline process( float x, float feedback ) {
+   float inline read() {
+      return dat[index];
+   }
+
+   float inline process( float x ) {
       float ret = dat[index];
-      dat[index] = x + ret * feedback;
+      dat[index] = x;
       ++index;
       if( index >= dat.size() )
          index = 0;
