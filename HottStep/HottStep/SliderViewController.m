@@ -33,7 +33,7 @@
     if (self) {
         // Initialization code
         
-        bg = [[Background alloc]initWithFrame:CGRectMake(0,30,96,290)];
+        bg = [[Background alloc]initWithFrame:CGRectMake(0,30,26,290)];
         
         [bg setBackgroundColor:[UIColor blackColor]];
         
@@ -45,10 +45,10 @@
 
         lightIndicator = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 30)];
         lightIndicator.image = offLight;
-        sliderLabel = [[UILabel alloc]initWithFrame:CGRectMake(0,200,100,30)];
+        sliderLabel = [[UILabel alloc]initWithFrame:CGRectMake(0,280,100,30)];
         sliderLabel.backgroundColor = [UIColor whiteColor];
       
-         [self addSubview:sliderLabel];
+        [self addSubview:sliderLabel];
         [self addSubview:lightIndicator];
         [lightIndicator release];
         [bg release];
@@ -89,7 +89,7 @@
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    NSLog(@"touches began");
+   
     if(bg.hidden == YES)
     {
         [bg setHidden:NO];
@@ -103,19 +103,13 @@
     UITouch *touch = [[event allTouches] anyObject];
     CGPoint location = [touch locationInView:touch.view];
     CGPoint pastLocation = [touch previousLocationInView:self]; //previous touch
-    NSLog(@"previous touch %f",pastLocation.x);
-     NSLog(@"previous touch %f",pastLocation.y);
-
-    NSLog(@"current touch %f",location.x);
-    NSLog(@"current touch %f",location.y);
-     
-     
+ 
     [bg drawTheSlider:location.y];
-    NSLog(@"sending the items");
+
     NSMutableString *labelString =[[NSMutableString alloc] init];
     [labelString appendString:@"/fuck/"];
     [labelString appendString:sliderLabel.text];
-    [self sendOSCMessage:location.y label:labelString];
+    [self sendOSCMessage:287-location.y label:labelString];
     [labelString release];
     
     // need to draw something here to show how big this item should be 
@@ -196,6 +190,8 @@
 {
     _sliderId = sliderId;
     sliderLabel.text = _sliderId;
+    NSLog(@"oh man");
+    [self setNeedsDisplay];
 }
 - (void)sendOSCMessage:(float)floatMessage label:(NSString*)label {
 	OSCMessage *msg = [OSCMessage createWithAddress:label];

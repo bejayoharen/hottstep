@@ -15,7 +15,11 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        currentIndex = 0;
+        totalNumber = 16;
         [self initializeView];
+    
+       
         // Initialization code
     }
     return self;
@@ -25,16 +29,17 @@
 {
     
     
-    for(int i = 0;i<7;i++)
+    for(int i = 0;i<17;i++)
     {
         
-        SliderViewController *slider = [[SliderViewController alloc] initWithFrame:CGRectMake(i*100, 0, 100, 480)];
+        SliderViewController *slider = [[SliderViewController alloc] initWithFrame:CGRectMake(i*28, 0, 100, 480)];
+        [sliders addObject:slider];
         [slider setSliderId:[NSString stringWithFormat:@"%d",i]];
         [self addSubview:slider];
         [slider release];
         
     }
-    //[self animateTheView];
+  //[self animateTheView];
          
 
 }
@@ -55,11 +60,34 @@
 
 }
 
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    
+    NSLog(@"stacey");
+}
+
 
 -(void)updateData
 {
     NSLog(@"Update the data");
-    [self animateTheView];
+    currentIndex++;
+    NSLog(@"current index @%i",currentIndex);
+    if(currentIndex == totalNumber)
+    {
+        currentIndex = 1;
+    }
+    self.frame = CGRectMake(0,0,self.frame.size.width,self.frame.size.height);
+    for(int i=0;i<7;i++)
+    {
+        NSInteger *position = i+currentIndex;
+        //SliderViewController * s = [sliders objectAtIndex:i];
+        [[self.subviews objectAtIndex:i]setSliderId:[NSString stringWithFormat:@"%d",position]];
+      
+     NSLog(@"current index @%i",position);
+        //[s setSliderId:@"FUCK @%",position];
+        //[s setSliderId:[NSString stringWithFormat:@"%d",position]];
+    }
+   [self animateTheView];
 }
 
 
