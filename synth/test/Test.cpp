@@ -8,6 +8,11 @@
 
 #include "portaudio.h"
 
+// to output to a file, turn this off, and pipe the output to a file. It will be raw. You can convert with
+// sox. Use something like this:
+// sox --endian little --channels 2 --rate 44100 --bits 16 --encoding signed-integer outout.raw synth.aiff
+#define PLAY_OUT
+
 using namespace std;
 using namespace hottstep::synth ;
 
@@ -66,8 +71,8 @@ int main( int args, char **argv ) {
     seq.push_back( &radon );
 
 
-    printf("\n\n");
-    printf("Sequencer Test. SR = %d, BufSize = %d\n", SAMPLE_RATE, FRAMES_PER_BUFFER);
+    //printf("\n\n");
+    //printf("Sequencer Test. SR = %d, BufSize = %d\n", SAMPLE_RATE, FRAMES_PER_BUFFER);
     
     err = Pa_Initialize();
     if( err != paNoError ) goto error;
@@ -183,8 +188,11 @@ int main( int args, char **argv ) {
     neon.getNotes()[13]=-1;
     neon.getNotes()[14]=-1;
     neon.getNotes()[15]=108;
+   
+    for( int j=0; j<seq.size(); ++j )
+       seq[j]->reset();
 
-
+#ifdef PLAY_OUT
     err = Pa_OpenStream(
               &stream,
               NULL, /* no input */
@@ -214,6 +222,35 @@ int main( int args, char **argv ) {
 
     Pa_Terminate();
     printf("Test finished.\n");
+#else
+   for( int i=0; i<NUM_SECONDS*SAMPLE_RATE; ++i ) {
+      float l = 0;
+      float r = 0;
+      for( int j=0; j<seq.size(); ++j ) {
+         float *ar = seq[j]->tick();
+         //printf("%d %d %f %f\n", i, j, ar[0], ar[1] );
+         l += ar[0];
+         r += ar[1];
+      }
+      l /= seq.size();
+      r /= seq.size();
+      int lint = (int) (l * 32768 + .5);
+      if( lint > 32767 )
+         lint = 32767;
+      if( lint < -32768 )
+         lint = -32768;
+      int rint = (int) (r * 32768 + .5);
+      if( rint > 32767 )
+         rint = 32767;
+      if( rint < -32768 )
+         rint = -32768;
+      //printf( "%f -> %d\n", l, lint );
+      short s = (short) ( (0xffff) & lint );
+      write( 1, &s, 2 );
+      s = (short) ( (0xffff) & rint );
+      write( 1, &s, 2 );
+   }
+#endif
     
     return err;
 error:

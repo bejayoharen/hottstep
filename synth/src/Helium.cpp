@@ -73,6 +73,7 @@ float *Helium::tick() {
    signal = modfilter.process( signal );
    signal = lpfilter.process( signal );
 
+
    //delay
    retVals[0] = delay1.read();
    retVals[1] = delay2.read();
